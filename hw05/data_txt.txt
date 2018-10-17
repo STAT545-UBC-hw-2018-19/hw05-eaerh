@@ -1,0 +1,5 @@
+structure(list(continent_redord = structure(1:5, .Label = c("Africa", 
+"Asia", "Americas", "Europe", "Oceania"), class = "factor"), 
+    min_lifeExp = c(23.599, 28.801, 37.579, 43.585, 69.12)), class = c("tbl_df", 
+"tbl", "data.frame"), .Names = c("continent_redord", "min_lifeExp"
+), row.names = c(NA, -5L))
