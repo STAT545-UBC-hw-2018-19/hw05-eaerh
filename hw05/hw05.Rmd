@@ -55,7 +55,7 @@ gap_drop_levels <- gap_drop %>%
 
 ##Reorder the levels of country or continent
 
-The data is by default ordered alphabetically. Let us instead order the countries by minimum population using $\texttt{fct_reorder}:
+The data is by default ordered alphabetically. Let us instead order the countries by minimum population using $\texttt{fct_reorder}$:
 
 ```{r}
 reordered_cntry <- fct_reorder(gap_drop_levels$country, gap_drop_levels$pop, min) 
@@ -75,6 +75,7 @@ gap_drop_levels %>%
   knitr::kable()
 
 ```
+
 Which yields the same answer.
 
 
@@ -225,7 +226,7 @@ Let us see how we can apply the plotly function to our new plot:
 ```{r}
 
 #not viewable in document
-ggplotly(lexp_new)
+#ggplotly(lexp_new)
 ```
 
 #Part 4: Writing figures to file
@@ -253,18 +254,30 @@ ggsave("./ggsave_figs/old_plot_img.png", plot = lexp_cont)
 
 #default would save the file with the same dimensions as the original plot
 
-ggsave("./ggsave_figs/default_img.png")
+ggsave(plot= lexp_cont, "./ggsave_figs/default_img.png")
 
 
 #fixed dimensions height and width:
-ggsave("./ggsave_figs/fixed_dim_img.png", width = 10, height = 15)
+ggsave(plot = lexp_new,"./ggsave_figs/fixed_dim_img.png", width = 10, height = 15)
 
 #scale
 
-ggsave("./ggsave_figs/scale_img.png", scale = 1.5)
+ggsave(plot = lexp_new,"./ggsave_figs/scale_img.png", scale = 1.5)
 
 
 ```
+
+Display images using image linking:
+
+Default plot: 
+![default_img](ggsave_figs/default_img.png)
+
+
+and 
+
+scaled plot:
+
+![scale_img](ggsave_figs/scale_img.png)
 
 ##Resolution
 
@@ -292,5 +305,61 @@ ggsave("./ggsave_figs/bmp_img.png", device = "bmp")
 
 
 
+```
+
+#But I want to do more
+
+The $\texttt{forcats}$ package includes the following functions to work with reordering factor levels:
+
+- `fct_relevel()`;
+- `fct_reorder2()`;
+- `fct_infreq()` and `fct_rev()`;
+- `fct_recode()`;
+- `fct_collapse()`; and
+- `fct_lump()`.
+
+Let us try some of them:
+
+`fct_relevel()` can be used to manually reorder levels. Let us create a plot for the population counts in Europa, and move $\textit{Norway}$ to the top (which would mean last entry).
+```{r}
+#filter continent and grouping by country, max population:
+
+gapminder %>% 
+  filter(continent == "Europe") %>% 
+  group_by(country) %>% 
+  summarize(
+    max_pop = max(pop)) %>% 
+  arrange(max_pop) %>%
+  ggplot(aes(max_pop, fct_relevel(country, "Norway"), color = country)) +
+  geom_point() + 
+  scale_x_log10() +
+  xlab("Maximum population") +
+  ylab("country")
+```
+
+
+## `fct_collapse()`
+
+
+`fct_collapse()` can be used to manually combine levels into groups. Let us combine all scandinavian countries into one group. Plotting countries in Europe with number of gdpPercap over 20000.:
+
+```{r}
+
+
+gapminder %>% 
+
+  filter(continent == "Europe") %>% 
+  
+  filter(gdpPercap > 20000) %>% 
+  
+  mutate(country = country %>% 
+      fct_collapse(
+        "Scandinavia" = c("Norway", "Sweden", "Denmark")
+      )
+  ) %>% 
+  ggplot(aes(x = country, fill = country)) +
+  geom_bar()
+
+```
 ```
 
